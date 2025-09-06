@@ -50,7 +50,35 @@
                     </div>
                 {% endfor %}
             </div>
-            <!-- Course detail template changes go here -->
+            {% if user.is_authenticated %}
+            </br>
+            <button class="btn btn-primary btn-block" data-toggle="collapse" data-target="#exam">Start Exam</button>
+            <div id="exam" class="collapse">
+                <div class="card card-body">
+                    <form id="questionform" action="{% url 'onlinecourse:submit' course.id %}" method="post">
+                        {% csrf_token %}
+                        {% for question in course.question_set.all %}
+                            <div class="card mt-1">
+                                <div class="card-header"><h5>Question {{forloop.counter}}: {{question.question_text}}</h5></div>
+                                <div class="card-body">
+                                    {% for choice in question.choice_set.all %}
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" name="choice{{ choice.id }}" value="{{ choice.id }}">
+                                                {{ choice.choice_text }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <input class="btn btn-primary" type="submit" value="Submit Exam">
+                    </form>
+                </div>
+            </div>
+            {% else %}
+                <p>Please <a href="{% url 'onlinecourse:login' %}">login</a> to take the exam.</p>
+            {% endif %}
     </div>
 </body>
 </html>
